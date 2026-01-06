@@ -47,7 +47,7 @@ pipeline {
             steps {
                 sh '''
                     echo "Running tfsec security scan..."
-                    tfsec .
+                    tfsec . --no-color
                     echo "tfsec scan completed."
                 '''
             }
