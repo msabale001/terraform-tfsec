@@ -89,5 +89,10 @@ pipeline {
                 }
             }
         }
+        post {
+            success {
+                echo 'Terraform operation completed successfully.'
+            }
+        }
     }
 }
