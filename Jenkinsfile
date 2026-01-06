@@ -47,7 +47,7 @@ pipeline {
             steps {
                 sh '''
                     echo "Running tfsec security scan..."
-                    tfsec . --severity-level HIGH --exit-code 1
+                    tfsec . tfsec --minimum-severity HIGH --exit-code 1
                     echo "tfsec scan completed."
                 '''
             }
