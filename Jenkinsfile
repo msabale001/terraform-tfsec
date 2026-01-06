@@ -67,23 +67,24 @@ pipeline {
             }
         }
 
-        stage('Manual Approval') {
-            when {
-                expression { params.Auto_Approve == false }
-            }
-            steps {
-                input message: "Approve Terraform ${params.Action.toUpperCase()}?",
-                      ok: "Proceed"
-            }
-        }
-
         stage('Terraform Apply / Destroy') {
             steps {
                 script {
                     if (params.Action == 'apply') {
-                        sh 'terraform apply --auto-approve tfplan'
-                    } else {
-                        sh 'terraform apply --auto-approve tfdestroy'
+                        if (params.Auto_Approve) {
+                            sh 'terraform apply --auto-approve tfplan'
+                        } else {
+                            input message: "Approve Terraform APPLY?", ok: "Apply"
+                            sh 'terraform apply tfplan'
+                        }
+                    }
+                    else if (params.Action == 'destroy') {
+                        if (params.Auto_Approve) {
+                            sh 'terraform apply --auto-approve tfdestroy'
+                        } else {
+                            input message: "Approve Terraform DESTROY?", ok: "Destroy"
+                            sh 'terraform apply tfdestroy'
+                        }
                     }
                 }
             }
