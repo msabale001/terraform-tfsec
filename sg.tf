@@ -6,6 +6,7 @@ resource "aws_security_group" "eks_cluster_sg" {
 
 resource "aws_security_group_rule" "eks_cluster_ingress" {
   type              = "ingress"
+  description       = "Ingress"
   from_port         = 22
   to_port           = 22
   protocol          = "SSH"
@@ -14,6 +15,7 @@ resource "aws_security_group_rule" "eks_cluster_ingress" {
 }
 resource "aws_security_group_rule" "egress_https" {
   type              = "egress"
+  description       = "Egress"
   from_port         = 443
   to_port           = 443
   protocol          = "tcp"
