@@ -36,6 +36,20 @@ pipeline {
                 sh 'terraform init'
             }
         }
+        stage('Terraform Validate') {
+            steps {
+                sh 'terraform validate'
+            }
+        }
+        stage('tfsec Security Scan') {
+            steps {
+                '''
+                echo "Running tfsec security scan..."
+                tfsec . --severity-level HIGH --exit-code 1
+                echo "tfsec scan completed."
+                '''
+            }
+        }
 
         stage('Terraform Plan') {
             steps {
