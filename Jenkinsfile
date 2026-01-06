@@ -89,10 +89,10 @@ pipeline {
                 }
             }
         }
-        post {
-            success {
-                echo 'Terraform operation completed successfully.'
-            }
+    }
+    post{
+        success {
+            echo "Pipeline completed successfully."
         }
     }
 }
