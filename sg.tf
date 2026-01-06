@@ -9,7 +9,7 @@ resource "aws_security_group_rule" "eks_cluster_ingress" {
   description       = "Ingress"
   from_port         = 22
   to_port           = 22
-  protocol          = "SSH"
+  protocol          = "tcp"
   cidr_blocks       = ["10.0.101.0/24", "10.0.102.0/24"]
   security_group_id = aws_security_group.eks_cluster_sg.id
 }
