@@ -18,6 +18,8 @@ pipeline {
         AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY')
         AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_KEY')
         AWS_DEFAULT_REGION    = 'us-east-1'
+        TF_IN_AUTOMATION      = "true"
+        TF_CLI_ARGS           = "-no-color"
     }
 
     stages {
@@ -39,10 +41,10 @@ pipeline {
             steps {
                 script {
                     if (params.Action == 'apply') {
-                        sh 'terraform plan -out=tfplan'
+                        sh 'terraform plan -no-color -out=tfplan'
                         sh 'terraform show -no-color tfplan > tfplan.txt'
                     } else {
-                        sh 'terraform plan -destroy -out=tfdestroy'
+                        sh 'terraform plan -destroy -no-color -out=tfdestroy'
                         sh 'terraform show -no-color tfdestroy > tfdestroy.txt'
                     }
                 }
