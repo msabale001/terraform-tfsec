@@ -36,17 +36,19 @@ pipeline {
                 sh 'terraform init'
             }
         }
+
         stage('Terraform Validate') {
             steps {
                 sh 'terraform validate'
             }
         }
+
         stage('tfsec Security Scan') {
             steps {
-                '''
-                echo "Running tfsec security scan..."
-                tfsec . --severity-level HIGH --exit-code 1
-                echo "tfsec scan completed."
+                sh '''
+                    echo "Running tfsec security scan..."
+                    tfsec . --severity-level HIGH --exit-code 1
+                    echo "tfsec scan completed."
                 '''
             }
         }
@@ -55,13 +57,23 @@ pipeline {
             steps {
                 script {
                     if (params.Action == 'apply') {
-                        sh 'terraform plan -no-color -out=tfplan'
-                        sh 'terraform show -no-color tfplan > tfplan.txt'
+                        sh 'terraform plan -out=tfplan'
+                        sh 'terraform show tfplan > tfplan.txt'
                     } else {
-                        sh 'terraform plan -destroy -no-color -out=tfdestroy'
-                        sh 'terraform show -no-color tfdestroy > tfdestroy.txt'
+                        sh 'terraform plan -destroy -out=tfdestroy'
+                        sh 'terraform show tfdestroy > tfdestroy.txt'
                     }
                 }
+            }
+        }
+
+        stage('Manual Approval') {
+            when {
+                expression { params.Auto_Approve == false }
+            }
+            steps {
+                input message: "Approve Terraform ${params.Action.toUpperCase()}?",
+                      ok: "Proceed"
             }
         }
 
@@ -69,20 +81,9 @@ pipeline {
             steps {
                 script {
                     if (params.Action == 'apply') {
-                        if (params.Auto_Approve) {
-                            sh 'terraform apply --auto-approve tfplan'
-                        } else {
-                            input message: "Approve Terraform APPLY?", ok: "Apply"
-                            sh 'terraform apply tfplan'
-                        }
-                    }
-                    else if (params.Action == 'destroy') {
-                        if (params.Auto_Approve) {
-                            sh 'terraform apply --auto-approve tfdestroy'
-                        } else {
-                            input message: "Approve Terraform DESTROY?", ok: "Destroy"
-                            sh 'terraform apply tfdestroy'
-                        }
+                        sh 'terraform apply --auto-approve tfplan'
+                    } else {
+                        sh 'terraform apply --auto-approve tfdestroy'
                     }
                 }
             }
